@@ -1,6 +1,6 @@
-TUNER
+DRC
 =====
 
-A Multi-Purpose Tuner
+Dynamic Range Compressor 
 
-We are building a tuner that, like the standard iPhone tuner, will be able to read an input pitch and display in real time how far it is from a fixed musical pitch. It will also work as a metronome and perform other musical operations, such as generating polyrhythms.
+We are building a Dynamic Range Compressor, which will be able to read an input audio file and narrow its dynamic range, according to a threshold dynamic and ratio specified by the user.
