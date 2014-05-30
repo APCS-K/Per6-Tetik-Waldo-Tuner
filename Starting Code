@@ -1,0 +1,24 @@
+import java.io.*;
+import java.net.URL;
+import javax.sound.sampled.*;
+import javax.swing.*;
+public class AudioInput {
+    public void changeVolume() {
+        File soundFile = new File("beep-01a.wav");
+        try {
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(sound\
+File);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Ty\
+pe.MASTER_GAIN);
+            gainControl.setValue(-10.0f); // Reduce volume by 10 decibels.            
+            clip.start();
+        }
+        catch (Exception e) {
+        }
+    }
+    public static void main(String[] args) {
+    }
+}
+
