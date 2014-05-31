@@ -1,20 +1,23 @@
-public class AudioInput {
-    public static void changeVolume() {
-        File soundFile = new File("beep-01a.wav");
-        try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
-            Clip clip = AudioSystem.getClip();
-            clip.open(audioInputStream);
-            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            gainControl.setValue(-10.0f); // Reduce volume by 10 decibels.                                                 
-            clip.start();
+    public static void changeVolumeByByte() {
+        byte[] data = SplitUp();
+        for (int i = 0; i < data.length; i*=10) {
+            try	{
+		byte[] byteData	= new byte[10];
+		for (int r = 0; r < byteData.length; r++) {
+                    byteData[r]	= data[r+i];
+		}
+                ByteArrayInputStream input = new ByteArrayInputStream(byteData);
+                Clip clip= AudioSystem.getClip();
+                AudioInputStream audioInputStream = new AudioInputStream(input, audioFormat, byteData.length);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-        catch (Exception e) {
-            System.out.println("Error");
-	}
     }
     public static void main(String[] args) {
         changeVolume();
+        byte[] data = SplitUp();
+        System.out.println(data.length);
     }
 }
-
