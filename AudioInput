@@ -2,40 +2,48 @@ import java.io.*;
 import java.net.URL;
 import javax.sound.sampled.*;
 import javax.swing.*;
+import java.io.File;
 public class AudioInput {
     public static void play(File inputFile) {
         byte[] soundFileBytes = ConversionIntoBytes();
-	System.out.println(soundFileBytes.length);
-	for (int i = 0;	i < soundFileBytes; i++) {
+        System.out.println(soundFileBytes.length);
+        for (int i = 0; i < soundFileBytes.length; i++) {
             try {
                 AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(inputFile);
-                AudioFormat audioFormat = AudioFileFormat.getAudioFileFormat(inputFile);
-                //              Clip bitClip = transformToClip.open(audioFormat, byteArray, start, size);                                          
-                //changeVolume(bitClip);                                                                                                           
-                Clip clip = null;
-                try {
-                    clip = AudioSystem.getClip();
-                    clip.open(audioFormat, soundFileBytes, i, 1);
-                    try {
-                        FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-                        gainControl.setValue(0f); // Reduce volume by 10 decibels.                                                                \
-                                                                                                                                                   
-                        clip.start();
-                    }
-                    catch (Exception ex) {
-                        System.out.println("Error");
-                    }
-
-                }
-                catch (Exception exc) {
-                    exc.printStackTrace();
-                }
-
+                AudioFormat audioFormat = audioInputStream.getFormat();
+                Clip bitClip = transformToClip(audioFormat, soundFileBytes, i, 1);
+                changeVolume(bitClip);
             }
             catch (Exception e) {
                 e.printStackTrace();
             }
-            }
+        }
+    }
+    public static void tester() {
+        File soundFile = new File("beep-01a.wav");
+        byte[] byteArray = ConversionIntoBytes();
+	for (int i = 0; i < 10000; i++) {
+        try {
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream.getFormat(), byteArray, i, 1);
+            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            gainControl.setValue(-10f); // Reduce volume by 10 decibels.                                                                                               
+            clip.start();
+            while(clip.getMicrosecondLength() < clip.getMicrosecondPosition()) { System.out.println("running");}
+                    /* audioInputStream = AudioSystem.getAudioInputStream(soundFile);                                                                                  
+            clip = AudioSystem.getClip();                                                                                                                              
+            clip.open(audioInputStream.getFormat(), byteArray, 20000, 50000);                                                                                          
+            gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);                                                                               
+            gainControl.setValue(+20f); // Reduce volume by 10 decibels.                                                                                              \
+                                                                                                                                                                       
+            clip.start(); */
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+	}
     }
     public static Clip transformToClip(AudioFormat audioFormat,byte[] byteArray, int start,int size) {
         Clip clip = null;
@@ -51,16 +59,16 @@ public class AudioInput {
     public static void changeVolume(Clip bitClip) {
         try {
             FloatControl gainControl = (FloatControl) bitClip.getControl(FloatControl.Type.MASTER_GAIN);
-            gainControl.setValue(0f); // Reduce volume by 10 decibels.                                                                                                 
+            gainControl.setValue(-10f); // Reduce volume by 10 decibels.                                                                                               
             bitClip.start();
         }
         catch (Exception e) {
             System.out.println("Error");
         }
     }
-   public static byte[] ConversionIntoBytes(){
+    public static byte[] ConversionIntoBytes(){
         File soundFile = new File("beep-01a.wav");
-        byte[] soundFileBytes = new byte[(int) (soundFile.length())];
+        byte[] soundFileBytes = new byte[100000];
         try {
             FileInputStream input = new FileInputStream(soundFile);
             try {
@@ -75,28 +83,13 @@ public class AudioInput {
         }
         return soundFileBytes;
     }
-    /*    public static void changeVolumeByByte() {                                                                                                                    
-        byte[] data = SplitUp();                                                                                                                                       
-        for (int i = 0; i < data.length; i*=10) {                                                                                                                      
-            try {                                                                                                                                                      
-                byte[] byteData = new byte[10];                                                                                                                        
-                for (int r = 0; r < byteData.length; r++) {                                                                                                            
-                    byteData[r] = data[r+i];                                                                                                                           
-                }                                                                                                                                                      
-                ByteArrayInputStream input = new ByteArrayInputStream(byteData);                                                                                       
-                Clip clip= AudioSystem.getClip();                                                                                                                      
-                AudioInputStream audioInputStream = new AudioInputStream(input, audioFormat, byteData.length);                                                         
-            }                                                                                                                                                          
-            catch (Exception e) {                                                                                                                                      
-                e.printStackTrace();                                                                                                                                   
-            }                                                                                                                                                          
-            } */
     public static void main(String[] args) {
         File soundFile = new File("beep-01a.wav");
         //changeVolume();                                                                                                                                              
         //byte[] data = SplitUp();                                                                                                                                     
         //System.out.println(data.length);                                                                                                                             
-        play(soundFile);
+        //play(soundFile);                                                                                                                                             
+        tester();
     }
 }
 
