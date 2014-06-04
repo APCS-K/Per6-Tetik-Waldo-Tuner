@@ -1,0 +1,18 @@
+import beads.*;
+import org.jaudiolibs.beads.*;
+import java.io.*;
+import java.net.URL;
+import javax.sound.sampled.*;
+import java.io.File;
+File inputFile = new File("/Users/johnwaldo/Desktop/AudioProject/beep-01a.wav");
+// AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(inputFile);
+AudioContext ac;
+ac = new AudioContext();
+//Noise n = new Noise(ac);
+//Gain g = new Gain(ac, 2, 0.1);
+String audioFileName = inputFile.getAbsolutePath();
+SamplePlayer player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
+ Gain g = new Gain(ac, 2, 5);
+  g.addInput(player);
+  ac.out.addInput(g);
+  ac.start();
