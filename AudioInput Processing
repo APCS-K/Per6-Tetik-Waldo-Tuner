@@ -15,4 +15,21 @@ SamplePlayer player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
  Gain g = new Gain(ac, 2, 5);
   g.addInput(player);
   ac.out.addInput(g);
+  
+  //theoretical framework -- let's say we can split the sample up into Clip[] = clips
+  //this is pseudocode to change the gain to the appropriate level of compression based on the threshold value and the user-inputed value for ratio
+  /*
+  for (int i; i>clips.getLength(); i++) {
+     if (clips[i].getGain > threshold) {
+        clips[i].setGain(threshold + (clips[i].getGain - threshold) / ratio);
+     }
+     else if (f < threshold) {
+        clips[i].setGain(threshold - Math.abs(clips[i].getGain - threshold) / ratio);
+     }     
+  }
+  */
+  
+  //this is how to change gain during the course of a program
+  g.setGain(7.0);
+  
   ac.start();
