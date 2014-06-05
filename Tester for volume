@@ -1,0 +1,57 @@
+import beads.*;
+import org.jaudiolibs.beads.*;
+import java.util.Arrays;
+import java.io.*;
+import java.net.URL;
+import javax.sound.sampled.*;
+import java.io.File;
+AudioContext ac;
+AudioContext ac2;
+void setup() {
+frameRate(200);
+size(600,600);
+ac = new AudioContext();
+ac2 = new AudioContext();
+File inputFile = new File("/Users/johnwaldo/Downloads/2-11 Stop.wav");
+File inputFile2 = new File("/Users/johnwaldo/Downloads/2-11 Stop.wav");
+Noise n = new Noise(ac);
+Noise n2 = new Noise(ac2);
+String audioFileName = inputFile.getAbsolutePath();
+String audioFileName2 = inputFile2.getAbsolutePath();
+SamplePlayer player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
+SamplePlayer player2 = new SamplePlayer(ac2, SampleManager.sample(audioFileName2));
+Gain g = new Gain(ac, 2,1);
+Gain g2 = new Gain(ac2, 2,4);
+g.addInput(player);
+g2.addInput(player2);
+ac.out.addInput(g);
+ac2.out.addInput(g2);
+ac.start();
+ac2.start();
+}
+
+color fore = color(255, 102, 204);
+color back = color(0,0,0);
+void draw() {
+  loadPixels();
+  //set the background
+  Arrays.fill(pixels, back);
+  //scan across the pixels
+  for(int i = 0; i < width; i++) {
+    //for each pixel work out where in the current audio buffer we are
+    int buffIndex = i * ac.getBufferSize() / width;
+    int buffIndex2 = i * ac2.getBufferSize() / width;
+    //then work out the pixel height of the audio data at that point
+    float vOff = ac.out.getValue(0,buffIndex);
+    float vOff2 = ac2.out.getValue(0,buffIndex2);
+    int vOffset = (int)((1 + vOff) * height / 2);
+    int vOffset2 = (int)((1 + vOff2) * height / 2);
+    //draw into Processing's convenient 1-D array of pixels
+    vOffset = min(vOffset, height);
+    vOffset2 = min(vOffset2, height);
+    pixels[vOffset * height + i] = fore;
+    pixels[vOffset2 * height + i] = fore;
+    System.out.println((vOff2)/(vOff));
+  }
+  updatePixels();
+}
