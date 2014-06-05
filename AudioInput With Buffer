@@ -5,56 +5,24 @@ import java.io.*;
 import java.net.URL;
 import javax.sound.sampled.*;
 import java.io.File;
+AudioContext ac;
 void setup() {
 frameRate(200);
 size(300,300);
-File inputFile = new File("/Users/johnwaldo/Downloads/2-11 Stop.wav");
-// AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(inputFile);
-AudioContext ac;
 ac = new AudioContext();
-File recorded = new File("Recorded.wav");
-//ShortFrameSegmenter sfs = new ShortFrameSegmenter(ac);
-//System.out.println(sfs.getChunkSize());
-
+File inputFile = new File("/Users/johnwaldo/Downloads/2-11 Stop.wav");
 Noise n = new Noise(ac);
-//Gain g = new Gain(ac, 2, 0.1);
 String audioFileName = inputFile.getAbsolutePath();
 SamplePlayer player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
- Gain g = new Gain(ac, 2);
-  g.addInput(player);
-   ac.out.addInput(g);
-    
- // System.out.println(g.getGain());
- 
-/*  boolean play = true;
-   while (play) {
-    try {
-      ac.start();
-     ac.record(2000, "Recorded.wav");
-     play = false;
-     ac.stop();
-    }
-    
-    catch (Exception e) {
-      e.printStackTrace();
-      play = false;
-      ac.stop();
-    }
-   }
-   */
- /*   ac.stop();
-    ac = new AudioContext();
-    player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
-   g = new Gain(ac, 2);
-   g.setGain(5);
-  g.addInput(player);
-   ac.out.addInput(g); 
-   ac.start();
-   play = false;
-   */
+Gain g = new Gain(ac, 2,4);
+g.addInput(player);
+ac.out.addInput(g);
+ac.start();
+}
 
 color fore = color(255, 102, 204);
 color back = color(0,0,0);
+void draw() {
   loadPixels();
   //set the background
   Arrays.fill(pixels, back);
