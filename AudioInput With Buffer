@@ -1,0 +1,68 @@
+import beads.*;
+import org.jaudiolibs.beads.*;
+import java.io.*;
+import java.net.URL;
+import javax.sound.sampled.*;
+import java.io.File;
+File inputFile = new File("/Users/johnwaldo/Desktop/AudioProject/beep-01a.wav");
+// AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(inputFile);
+AudioContext ac;
+ac = new AudioContext();
+File recorded = new File("Recorded.wav");
+//ShortFrameSegmenter sfs = new ShortFrameSegmenter(ac);
+//System.out.println(sfs.getChunkSize());
+
+Noise n = new Noise(ac);
+//Gain g = new Gain(ac, 2, 0.1);
+String audioFileName = inputFile.getAbsolutePath();
+SamplePlayer player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
+ Gain g = new Gain(ac, 2);
+  g.addInput(player);
+   ac.out.addInput(g);
+    
+ // System.out.println(g.getGain());
+ 
+/*  boolean play = true;
+   while (play) {
+    try {
+      ac.start();
+     ac.record(2000, "Recorded.wav");
+     play = false;
+     ac.stop();
+    }
+    
+    catch (Exception e) {
+      e.printStackTrace();
+      play = false;
+      ac.stop();
+    }
+   }
+   */
+ /*   ac.stop();
+    ac = new AudioContext();
+    player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
+   g = new Gain(ac, 2);
+   g.setGain(5);
+  g.addInput(player);
+   ac.out.addInput(g); 
+   ac.start();
+   play = false;
+   */
+   
+  ac = new AudioContext();
+n = new Noise(ac);
+audioFileName = inputFile.getAbsolutePath();
+ player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
+g = new Gain(ac, 2, 2);
+  g.addInput(player);
+   ac.out.addInput(g);
+    for(int i = 0; i < width; i++) {
+    //for each pixel work out where in the current audio buffer we are
+    int buffIndex = i * ac.getBufferSize() / width;
+    //then work out the pixel height of the audio data at that point
+    int vOffset = (int)((1 + ac.out.getValue(0, buffIndex)) * height / 2);
+    //draw into Processing's convenient 1-D array of pixels
+    vOffset = min(vOffset, height);
+   System.out.println(vOffset); 
+    }
+   ac.start();
