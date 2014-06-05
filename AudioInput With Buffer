@@ -1,10 +1,11 @@
 import beads.*;
 import org.jaudiolibs.beads.*;
+
 import java.io.*;
 import java.net.URL;
 import javax.sound.sampled.*;
 import java.io.File;
-File inputFile = new File("/Users/johnwaldo/Desktop/AudioProject/beep-01a.wav");
+File inputFile = new File("/Users/emretetik/Downloads/2-11 Stop.wav");
 // AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(inputFile);
 AudioContext ac;
 ac = new AudioContext();
