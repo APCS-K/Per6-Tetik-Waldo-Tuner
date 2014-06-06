@@ -1,95 +1,53 @@
+import beads.*;
+import org.jaudiolibs.beads.*;
+import java.util.Arrays;
 import java.io.*;
 import java.net.URL;
 import javax.sound.sampled.*;
-import javax.swing.*;
 import java.io.File;
-public class AudioInput {
-    public static void play(File inputFile) {
-        byte[] soundFileBytes = ConversionIntoBytes();
-        System.out.println(soundFileBytes.length);
-        for (int i = 0; i < soundFileBytes.length; i++) {
-            try {
-                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(inputFile);
-                AudioFormat audioFormat = audioInputStream.getFormat();
-                Clip bitClip = transformToClip(audioFormat, soundFileBytes, i, 1);
-                changeVolume(bitClip);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    public static void tester() {
-        File soundFile = new File("beep-01a.wav");
-        byte[] byteArray = ConversionIntoBytes();
-	for (int i = 0; i < 10000; i++) {
-        try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
-            Clip clip = AudioSystem.getClip();
-            clip.open(audioInputStream.getFormat(), byteArray, i, 1);
-            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            gainControl.setValue(-10f); // Reduce volume by 10 decibels.                                                                                               
-            clip.start();
-            while(clip.getMicrosecondLength() < clip.getMicrosecondPosition()) { System.out.println("running");}
-                    /* audioInputStream = AudioSystem.getAudioInputStream(soundFile);                                                                                  
-            clip = AudioSystem.getClip();                                                                                                                              
-            clip.open(audioInputStream.getFormat(), byteArray, 20000, 50000);                                                                                          
-            gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);                                                                               
-            gainControl.setValue(+20f); // Reduce volume by 10 decibels.                                                                                              \
-                                                                                                                                                                       
-            clip.start(); */
-
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-	}
-    }
-    public static Clip transformToClip(AudioFormat audioFormat,byte[] byteArray, int start,int size) {
-        Clip clip = null;
-        try {
-            clip = AudioSystem.getClip();
-            clip.open(audioFormat, byteArray, start, size);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return clip;
-    }
-    public static void changeVolume(Clip bitClip) {
-        try {
-            FloatControl gainControl = (FloatControl) bitClip.getControl(FloatControl.Type.MASTER_GAIN);
-            gainControl.setValue(-10f); // Reduce volume by 10 decibels.                                                                                               
-            bitClip.start();
-        }
-        catch (Exception e) {
-            System.out.println("Error");
-        }
-    }
-    public static byte[] ConversionIntoBytes(){
-        File soundFile = new File("beep-01a.wav");
-        byte[] soundFileBytes = new byte[100000];
-        try {
-            FileInputStream input = new FileInputStream(soundFile);
-            try {
-                input.read(soundFileBytes);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return soundFileBytes;
-    }
-    public static void main(String[] args) {
-        File soundFile = new File("beep-01a.wav");
-        //changeVolume();                                                                                                                                              
-        //byte[] data = SplitUp();                                                                                                                                     
-        //System.out.println(data.length);                                                                                                                             
-        //play(soundFile);                                                                                                                                             
-        tester();
-    }
+AudioContext ac;
+AudioContext ac2;
+float minVol = (float) Double.MAX_VALUE;
+float maxVol = (float) Double.MIN_VALUE;
+void setup() {
+frameRate(200);
+size(600,600);
+ac = new AudioContext();
+File inputFile = new File("/Users/johnwaldo/Downloads/2-11 Stop.wav");
+Noise n = new Noise(ac);
+String audioFileName = inputFile.getAbsolutePath();
+SamplePlayer player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
+Gain g = new Gain(ac, 2,3);
+g.addInput(player);
+ac.out.addInput(g);
+ac.start();
 }
+
+color fore = color(255, 102, 204);
+color back = color(0,0,0);
+void draw() {
+  loadPixels();
+  //set the background
+  Arrays.fill(pixels, back);
+  //scan across the pixels
+  for(int i = 0; i < width; i++) {
+    //for each pixel work out where in the current audio buffer we are
+    int buffIndex = i * ac.getBufferSize() / width;
+    //then work out the pixel height of the audio data at that point
+    float vOff = ac.out.getValue(0,buffIndex);
+    if (vOff < 0) { 
+      ac.out.setValue(vOff + vOff*.5);
+      vOff = ac.out.getValue(0,buffIndex);
+    }
+    else { 
+      ac.out.setValue(vOff - vOff*.5);
+      vOff = ac.out.getValue(0,buffIndex); 
+    }
+    int vOffset = (int)((1 + vOff) * height / 2);
+    //draw into Processing's convenient 1-D array of pixels
+    vOffset = min(vOffset, height);
+    pixels[vOffset * height + i] = fore;
+  }
+  updatePixels();
+} 
 
