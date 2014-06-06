@@ -14,7 +14,7 @@ File inputFile = new File("/Users/johnwaldo/Downloads/2-11 Stop.wav");
 Noise n = new Noise(ac);
 String audioFileName = inputFile.getAbsolutePath();
 SamplePlayer player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
-Gain g = new Gain(ac, 2,4);
+Gain g = new Gain(ac, 2,5);
 g.addInput(player);
 ac.out.addInput(g);
 ac.start();
@@ -51,12 +51,11 @@ void draw() {
     int buffIndex = i * ac.getBufferSize() / width;
     //then work out the pixel height of the audio data at that point
     float vOff = ac.out.getValue(0,buffIndex);
-    if (vOff < 0) { 
-      ac.out.setGain(ac.out.getGain()+.05);
+    if (vOff < -.02) { 
+      ac.out.setGain(ac.out.getGain()+.0001);
     }
-    else { 
-      ac.out.setGain(ac.out.getGain()-.05);
-
+    else if (vOff > .02) { 
+      ac.out.setGain(ac.out.getGain()-.0001);
     }
   }
 }
