@@ -8,33 +8,35 @@ import java.io.File;
 AudioContext ac;
 void setup() {
 frameRate(200);
-size(300,300);
+size(400,400);
 ac = new AudioContext();
 File inputFile = new File("/Users/johnwaldo/Downloads/2-11 Stop.wav");
 Noise n = new Noise(ac);
 String audioFileName = inputFile.getAbsolutePath();
 SamplePlayer player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
-Gain g = new Gain(ac, 2,4);
+Gain g = new Gain(ac, 2,2);
 g.addInput(player);
 ac.out.addInput(g);
 ac.start();
 }
 
 color fore = color(255, 102, 204);
+color c = color(140, 200, 90);
 color back = color(0,0,0);
+
 void draw() {
   loadPixels();
   //set the background
   Arrays.fill(pixels, back);
   //scan across the pixels
-  for(int i = 0; i < width; i++) {
+   for(int i = 0; i < width; i++) {
     //for each pixel work out where in the current audio buffer we are
     int buffIndex = i * ac.getBufferSize() / width;
     //then work out the pixel height of the audio data at that point
-    int vOffset = (int)((1 + ac.out.getValue(0, buffIndex)) * height / 2);
-    //draw into Processing's convenient 1-D array of pixels
+    float vOff = ac.out.getValue(0,buffIndex);
+    int vOffset = (int)((1 + ac.out.getValue(0,buffIndex)) * height / 2);
     vOffset = min(vOffset, height);
-    pixels[vOffset * height + i] = fore;
+    pixels[vOffset * height + i] = c;
   }
   updatePixels();
 }
