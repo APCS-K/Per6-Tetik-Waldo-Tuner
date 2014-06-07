@@ -10,6 +10,7 @@ AudioContext ac;
 Frequency f;
 Glide fGlide;
 WavePlayer wPlayer;
+PowerSpectrum ps;
 float averageFrequency = 400.0;
 color fore = color(255, 255, 255);
 color back = color(0,0,0);
@@ -26,7 +27,7 @@ ShortFrameSegmenter sfs = new ShortFrameSegmenter(ac);
 sfs.addInput(micIn);
 FFT fft = new FFT();
 sfs.addListener(fft);
-PowerSpectrum ps = new PowerSpectrum();
+ps = new PowerSpectrum();
 fft.addListener(ps);
 f = new Frequency(44100.0f);
 ps.addListener(f);
@@ -34,33 +35,18 @@ ac.out.addDependent(sfs);
 ac.start();
 }
 
-void draw() {
-
-background(back);
-stroke(fore);
-text("Current Input Frequency: " + averageFrequency, 100, 100);
-if( f.getFeatures() != null && random(1.0) > 0.85) {
-float inputFrequency = f.getFeatures();
-if( inputFrequency < 3000) {
-averageFrequency = inputFrequency;
-}
-fGlide.setValue(averageFrequency);
-loadPixels();
-  //set the background
-  java.util.Arrays.fill(pixels, color(0));
- 
-  //scan across the pixels
-  for(int i = 0; i < width; i++)
-  {
-    //for each pixel work out where in the current audio buffer we are
-    int buffIndex = i * ac.DEFAULT_BUFFER_SIZE / width;
-    //then work out the pixel height of the audio data at that point
-    int vOffset = (int)((1 + ac.out.getValue(0, buffIndex)) * height / 2);
-    //draw into Processing's convenient 1-D array of pixels
-    pixels[vOffset * height + i] = color(255);
+void draw()
+{
+  background(back);
+  stroke(fore);
+  if(ps == null) return;
+  float[] features = ps.getFeatures();
+  if(features != null) {
+    //scan across the pixels
+    for(int i = 0; i < width; i++) {
+      int featureIndex = i * features.length / width;
+      int vOffset = height - 1 - Math.min((int)(features[featureIndex] * height), height - 1);
+      line(i,height,i,vOffset);
+    }
   }
-  updatePixels(); // paint the new pixel array to the screen
-
-}
-
 }
