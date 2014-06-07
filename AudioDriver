@@ -8,7 +8,7 @@ import javax.sound.sampled.*;
 import java.io.File;
 //public class AudioDriver extends PApplet {
 String audioType = "file";
-String pathName = "asdas";
+String pathName = "/Users/johnwaldo/Downloads/2-11 Stop.wav";
 String desiredAction = "play";
 AudioContext ac;
 Frequency f;
@@ -49,38 +49,42 @@ ac.start();
 size(400,400);
 ac = new AudioContext();
 File inputFile;
-try { inputFile = new File(pathName); }
-catch (Exception e) {System.out.println("Not a valid pathName"); }
+try { 
+inputFile = new File(pathName); 
 Noise n = new Noise(ac);
 String audioFileName = inputFile.getAbsolutePath();
 SamplePlayer player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
 Gain g = new Gain(ac, 2,2);
 g.addInput(player);
 ac.out.addInput(g);
-ac.start();
+ac.start();}
+catch (Exception e) {System.out.println("Not a valid pathName"); }
+
  }
  else if (audioType == "file" && desiredAction == "compression") {
    frameRate(200);
 size(400,400);
 ac = new AudioContext();
 File inputFile;
-try { inputFile = new File(pathName); }
-catch (Exception e) {System.out.println("Not a valid pathName"); }
+try { 
+  inputFile = new File(pathName);
 Noise n = new Noise(ac);
 String audioFileName = inputFile.getAbsolutePath();
 SamplePlayer player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
 Gain g = new Gain(ac, 2,2);
 g.addInput(player);
 ac.out.addInput(g);
-ac.start();
+ac.start();}
+catch (Exception e) {System.out.println("Not a valid pathName"); }
+
  }
  else if (audioType == "file" && desiredAction == "frequency") {
   frameRate(200);
 size(600,600);
 ac = new AudioContext();
 File inputFile;
-try { inputFile = new File(pathName); }
-catch (Exception e) {System.out.println("Not a valid pathName"); }
+try { 
+inputFile = new File(pathName);
 Noise n = new Noise(ac);
 String audioFileName = inputFile.getAbsolutePath();
 SamplePlayer player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
@@ -94,7 +98,9 @@ sfs.addListener(fft);
 ps = new PowerSpectrum();
 fft.addListener(ps);
 ac.out.addDependent(sfs);
-ac.start();
+ac.start(); }
+catch (Exception e) {System.out.println("Not a valid pathName"); }
+
  }
 }
 
