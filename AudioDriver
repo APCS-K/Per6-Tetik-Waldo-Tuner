@@ -48,7 +48,9 @@ ac.start();
    frameRate(200);
 size(400,400);
 ac = new AudioContext();
-File inputFile = new File("/Users/johnwaldo/Downloads/2-11 Stop.wav");
+File inputFile;
+try { inputFile = new File(pathName); }
+catch (Exception e) {System.out.println("Not a valid pathName"); }
 Noise n = new Noise(ac);
 String audioFileName = inputFile.getAbsolutePath();
 SamplePlayer player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
@@ -61,7 +63,9 @@ ac.start();
    frameRate(200);
 size(400,400);
 ac = new AudioContext();
-File inputFile = new File("/Users/johnwaldo/Downloads/2-11 Stop.wav");
+File inputFile;
+try { inputFile = new File(pathName); }
+catch (Exception e) {System.out.println("Not a valid pathName"); }
 Noise n = new Noise(ac);
 String audioFileName = inputFile.getAbsolutePath();
 SamplePlayer player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
@@ -74,7 +78,9 @@ ac.start();
   frameRate(200);
 size(600,600);
 ac = new AudioContext();
-File inputFile = new File("/Users/johnwaldo/Downloads/2-11 Stop.wav");
+File inputFile;
+try { inputFile = new File(pathName); }
+catch (Exception e) {System.out.println("Not a valid pathName"); }
 Noise n = new Noise(ac);
 String audioFileName = inputFile.getAbsolutePath();
 SamplePlayer player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
