@@ -1,0 +1,182 @@
+import processing.core.PApplet;
+import beads.*;
+import org.jaudiolibs.beads.*;
+import java.util.Arrays;
+import java.io.*;
+import java.net.URL;
+import javax.sound.sampled.*;
+import java.io.File;
+//public class AudioDriver extends PApplet {
+String audioType = "file";
+String pathName = "asdas";
+String desiredAction = "play";
+AudioContext ac;
+Frequency f;
+Glide fGlide;
+WavePlayer wPlayer;
+PowerSpectrum ps;
+float averageFrequency = 400.0;
+color fore = color(255, 255, 255);
+color back = color(0,0,0);
+/*public AudioDriver(String at, String pn, String da) {
+  audioType = at;
+  pathName = pn;
+  desiredAction = da;
+} */
+void setup() {
+ if (audioType == "microphone" && desiredAction == "frequency") {
+   size(600,600);
+ac = new AudioContext();
+Gain g = new Gain(ac, 2, .01);
+ac.out.addInput(g);
+UGen micIn = ac.getAudioInput();
+fGlide = new Glide(ac, 50, 10);
+wPlayer = new WavePlayer(ac, fGlide, Buffer.SINE);
+g.addInput(wPlayer);
+ShortFrameSegmenter sfs = new ShortFrameSegmenter(ac);
+sfs.addInput(micIn);
+FFT fft = new FFT();
+sfs.addListener(fft);
+ps = new PowerSpectrum();
+fft.addListener(ps);
+f = new Frequency(44100.0f);
+ps.addListener(f);
+ac.out.addDependent(sfs);
+ac.start();
+ }
+ else if (audioType == "file" && desiredAction == "play") {
+   frameRate(200);
+size(400,400);
+ac = new AudioContext();
+File inputFile = new File("/Users/johnwaldo/Downloads/2-11 Stop.wav");
+Noise n = new Noise(ac);
+String audioFileName = inputFile.getAbsolutePath();
+SamplePlayer player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
+Gain g = new Gain(ac, 2,2);
+g.addInput(player);
+ac.out.addInput(g);
+ac.start();
+ }
+ else if (audioType == "file" && desiredAction == "compression") {
+   frameRate(200);
+size(400,400);
+ac = new AudioContext();
+File inputFile = new File("/Users/johnwaldo/Downloads/2-11 Stop.wav");
+Noise n = new Noise(ac);
+String audioFileName = inputFile.getAbsolutePath();
+SamplePlayer player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
+Gain g = new Gain(ac, 2,2);
+g.addInput(player);
+ac.out.addInput(g);
+ac.start();
+ }
+ else if (audioType == "file" && desiredAction == "frequency") {
+  frameRate(200);
+size(600,600);
+ac = new AudioContext();
+File inputFile = new File("/Users/johnwaldo/Downloads/2-11 Stop.wav");
+Noise n = new Noise(ac);
+String audioFileName = inputFile.getAbsolutePath();
+SamplePlayer player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
+Gain g = new Gain(ac, 2,2);
+g.addInput(player);
+ac.out.addInput(g);
+ShortFrameSegmenter sfs = new ShortFrameSegmenter(ac);
+sfs.addInput(ac.out);
+FFT fft = new FFT();
+sfs.addListener(fft);
+ps = new PowerSpectrum();
+fft.addListener(ps);
+ac.out.addDependent(sfs);
+ac.start();
+ }
+}
+
+
+void draw() {
+if (audioType == "microphone" && desiredAction == "frequency") {
+   background(back);
+  stroke(fore);
+  if(ps == null) return;
+  float[] features = ps.getFeatures();
+  if(features != null) {
+    //scan across the pixels
+    for(int i = 0; i < width; i++) {
+      int featureIndex = i * features.length / width;
+      int vOffset = height - 1 - Math.min((int)(features[featureIndex] * height), height - 1);
+      line(i,height,i,vOffset);
+    }
+  }
+}
+else if (audioType == "file" && desiredAction == "play") {
+loadPixels();
+  //set the background
+  Arrays.fill(pixels, back);
+  //scan across the pixels
+   for(int i = 0; i < width; i++) {
+    //for each pixel work out where in the current audio buffer we are
+    int buffIndex = i * ac.getBufferSize() / width;
+    //then work out the pixel height of the audio data at that point
+    float vOff = ac.out.getValue(0,buffIndex);
+    int vOffset = (int)((1 + ac.out.getValue(0,buffIndex)) * height / 2);
+    vOffset = min(vOffset, height);
+    pixels[vOffset * height + i] = fore;
+  }
+  updatePixels();
+}
+else if (audioType == "file" && desiredAction == "compression") {
+  loadPixels();
+  //set the background
+  Arrays.fill(pixels, back);
+  //scan across the pixels
+   for(int i = 0; i < width; i++) {
+    //for each pixel work out where in the current audio buffer we are
+    int buffIndex = i * 4 / width;
+    //then work out the pixel height of the audio data at that point
+    float vOff = ac.out.getValue(0,buffIndex);
+    if (vOff < .15) { 
+      ac.out.setGain(ac.out.getGain()+.01);
+      ac.out.setValue(ac.out.getValue(0,buffIndex)+.01);
+    }
+    else if(vOff > .25) { 
+      ac.out.setGain(ac.out.getGain()-.01);
+      ac.out.setValue(ac.out.getValue(0,buffIndex)-.01);
+    }
+    int vOffset = (int)((1 + ac.out.getValue(0,buffIndex)) * height / 2);
+    vOffset = min(vOffset, height);
+  }
+  updatePixels();
+}
+else if (audioType == "file" && desiredAction == "frequency") {
+background(back);
+  stroke(fore);
+  if(ps == null) return;
+  float[] features = ps.getFeatures();
+  if(features != null) {
+    //scan across the pixels
+    for(int i = 0; i < width; i++) {
+      int featureIndex = i * features.length / width;
+      int vOffset = height - 1 - Math.min((int)(features[featureIndex] * height), height - 1);
+      line(i,height,i,vOffset);
+    }
+  }
+}
+}
+
+/*
+public static void main(String[] args) {
+ String audioType;
+ String pathName;
+ String desiredAction;
+  try {
+    audioType = args[0];
+    pathName = args[1];
+    desiredAction = args[2];
+    AudioDriver AD = new AudioDriver(audioType,pathName,desiredAction);
+  }
+  catch (Exception e) {
+    AudioDriver AD = new AudioDriver("microphone","asdas","frequency");
+  } 
+  
+} */
+//}
