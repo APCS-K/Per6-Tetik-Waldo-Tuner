@@ -1,0 +1,51 @@
+import beads.*;
+import org.jaudiolibs.beads.*;
+import java.util.Arrays;
+import java.io.*;
+import java.net.URL;
+import javax.sound.sampled.*;
+import java.io.File;
+AudioContext ac;
+Frequency f;
+PowerSpectrum ps;
+Glide fGlide;
+float averageFrequency = 400.0;
+void setup() {
+frameRate(200);
+size(600,600);
+ac = new AudioContext();
+File inputFile = new File("/Users/johnwaldo/Downloads/2-11 Stop.wav");
+Noise n = new Noise(ac);
+String audioFileName = inputFile.getAbsolutePath();
+SamplePlayer player = new SamplePlayer(ac, SampleManager.sample(audioFileName));
+Gain g = new Gain(ac, 2,2);
+g.addInput(player);
+ac.out.addInput(g);
+ShortFrameSegmenter sfs = new ShortFrameSegmenter(ac);
+sfs.addInput(ac.out);
+FFT fft = new FFT();
+sfs.addListener(fft);
+ps = new PowerSpectrum();
+fft.addListener(ps);
+ac.out.addDependent(sfs);
+ac.start();
+}
+
+color fore = color(255, 102, 204);
+color c = color(140, 200, 90);
+color back = color(0,0,0);
+
+void draw() {
+  background(back);
+  stroke(fore);
+  if(ps == null) return;
+  float[] features = ps.getFeatures();
+  if(features != null) {
+    //scan across the pixels
+    for(int i = 0; i < width; i++) {
+      int featureIndex = i * features.length / width;
+      int vOffset = height - 1 - Math.min((int)(features[featureIndex] * height), height - 1);
+      line(i,height,i,vOffset);
+    }
+  }
+}
