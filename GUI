@@ -1,0 +1,59 @@
+void setup() {
+  
+  size(500,500); 
+  background(0,100,255);
+  fill(204,102,0);
+  rect(100,250,283,25);
+  rect(140,300,215,25);
+  rect(140,350,215,25);
+  
+  
+ PFont font = loadFont("SansSerif-48.vlw");
+ textFont(font, 20);
+ String DRC = "Dynamic Range Compression";
+ String FFR = "File Frequency Reader";
+ String MFR = "Mic Frequency Reader";
+ /*
+ float tS=100;
+//the textSize() is shorten by 1 until the textWidth() smaller then the width of the rect
+while(textWidth(s)>100){
+ tS-=1;
+ textSize(tS);
+ println(textWidth(s));
+}
+fill(0);
+//draw the text in the middle of the rect 
+text(s,50+(100-textWidth(s))/2,50+100/2+tS/2);
+*/
+fill(255,90,0);
+textFont(font, 50);
+text("Please select one:", 50, 150);
+fill(0);
+textFont(font, 20);
+text(DRC,100,270);
+text(FFR,140,320);
+text(MFR,140,370);
+
+}
+
+void draw() {
+ 
+ //rect(25,25,100,100);
+ 
+}
+
+void mousePressed() {
+
+ if (mouseX >= 100 && mouseX <= 383 && mouseY >= 250 && mouseY <= 275) {
+   rect(0,0,10,10);  
+ }
+ if(mouseX >= 140 && mouseX <= 355 && mouseY >= 300 && mouseY <= 325) {
+   fill(255); 
+   rect(0,0,10,10);
+ }
+ if(mouseX >= 140 && mouseX <= 355 && mouseY >= 350 && mouseY <= 375) {
+   fill(90); 
+   rect(0,0,10,10);
+ }
+ 
+}
