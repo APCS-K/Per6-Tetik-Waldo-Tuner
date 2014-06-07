@@ -6,9 +6,8 @@ import java.io.*;
 import java.net.URL;
 import javax.sound.sampled.*;
 import java.io.File;
-//public class AudioDriver extends PApplet {
 String audioType = "file";
-String pathName = "/Users/johnwaldo/Downloads/2-11 Stop.wav";
+String pathName = "/Users/johnwaldo/Downloads/beep-01a.wav";
 String desiredAction = "play";
 AudioContext ac;
 Frequency f;
@@ -125,22 +124,38 @@ loadPixels();
   //set the background
   Arrays.fill(pixels, back);
   //scan across the pixels
+  double addVar = 1;
+  double multVar = 2;
    for(int i = 0; i < width; i++) {
     //for each pixel work out where in the current audio buffer we are
     int buffIndex = i * ac.getBufferSize() / width;
     //then work out the pixel height of the audio data at that point
     float vOff = ac.out.getValue(0,buffIndex);
-    int vOffset = (int)((1 + ac.out.getValue(0,buffIndex)) * height / 2);
+    int vOffset = (int)((addVar + ac.out.getValue(0,buffIndex)) * height / multVar);
     vOffset = min(vOffset, height);
+    try {
     pixels[vOffset * height + i] = fore;
+    }
+    catch (Exception e) {
+      if (vOffset*height+i < pixels.length) {
+      multVar*= 1.75;
+      addVar*=1.75;
+    }
+    else {
+      multVar/= 1.75;
+      addVar/=1.75;
+    }
   }
   updatePixels();
+}
 }
 else if (audioType == "file" && desiredAction == "compression") {
   loadPixels();
   //set the background
   Arrays.fill(pixels, back);
   //scan across the pixels
+    double multVar = 2;
+    double addVar = 1;
    for(int i = 0; i < width; i++) {
     //for each pixel work out where in the current audio buffer we are
     int buffIndex = i * 4 / width;
@@ -154,8 +169,21 @@ else if (audioType == "file" && desiredAction == "compression") {
       ac.out.setGain(ac.out.getGain()-.01);
       ac.out.setValue(ac.out.getValue(0,buffIndex)-.01);
     }
-    int vOffset = (int)((1 + ac.out.getValue(0,buffIndex)) * height / 2);
+    int vOffset = (int)((addVar + ac.out.getValue(0,buffIndex)) * height / multVar);
     vOffset = min(vOffset, height);
+       try {
+    pixels[vOffset * height + i] = fore;
+    }
+    catch (Exception e) {
+      if (vOffset*height+i < pixels.length) {
+      multVar*= 1.75;
+      addVar*=1.75;
+    }
+    else {
+      multVar/= 1.75;
+      addVar/=1.75;
+    }
+  }
   }
   updatePixels();
 }
@@ -174,21 +202,3 @@ background(back);
   }
 }
 }
-
-/*
-public static void main(String[] args) {
- String audioType;
- String pathName;
- String desiredAction;
-  try {
-    audioType = args[0];
-    pathName = args[1];
-    desiredAction = args[2];
-    AudioDriver AD = new AudioDriver(audioType,pathName,desiredAction);
-  }
-  catch (Exception e) {
-    AudioDriver AD = new AudioDriver("microphone","asdas","frequency");
-  } 
-  
-} */
-//}
