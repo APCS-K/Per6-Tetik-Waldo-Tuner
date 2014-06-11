@@ -1,3 +1,9 @@
+//stores user input for absolute path string
+String typedText = "Type abs path here";
+
+PFont other;
+
+
 void setup() {
   
   size(500,500); 
@@ -13,6 +19,7 @@ void setup() {
  String DRC = "Dynamic Range Compression";
  String FFR = "File Frequency Reader";
  String MFR = "Mic Frequency Reader";
+ String please = "Select file to be processed, if applicable:";
  /*
  float tS=100;
 //the textSize() is shorten by 1 until the textWidth() smaller then the width of the rect
@@ -33,19 +40,29 @@ textFont(font, 20);
 text(DRC,100,270);
 text(FFR,140,320);
 text(MFR,140,370);
+ text(please,50,425);
+
+//text(typedText+(frameCount/10 % 2 == 0 ? "_" : ""),75,400);
 
 }
 
 void draw() {
  
- //rect(25,25,100,100);
- 
+ fill(255,90,0);
+ rect(75,430,300,25);
+ fill(0);
+ text(typedText,75,455);
+ System.out.println(typedText);
 }
 
 void mousePressed() {
 
  if (mouseX >= 100 && mouseX <= 383 && mouseY >= 250 && mouseY <= 275) {
-   rect(0,0,10,10);  
+   rect(0,0,10,10);
+   Scanner scan = new Scanner(System.in);  
+   System.out.println("Type in File Name: ");
+   String s = scan.next();
+   
  }
  if(mouseX >= 140 && mouseX <= 355 && mouseY >= 300 && mouseY <= 325) {
    fill(255); 
@@ -57,3 +74,27 @@ void mousePressed() {
  }
  
 }
+
+void keyReleased() {
+  if (key != CODED) {
+    switch(key) {
+    case BACKSPACE:
+      typedText = typedText.substring(0,max(0,typedText.length()-1));
+      break;
+    case TAB:
+      typedText += "    ";
+      break;
+    case ENTER:
+    case RETURN:
+      // comment out the following two lines to disable line-breaks
+      typedText += "\n";
+      break;
+    case ESC:
+    case DELETE:
+      break;
+    default:
+      typedText += key;
+    }
+  }
+}
+
